@@ -51,6 +51,35 @@
             z-index: 10;
             flex-shrink: 0;
         }
+        
+        .back-button {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 8px 18px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #f9f3d9;
+            backdrop-filter: blur(4px);
+        }
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+        }
+        .back-button:active {
+            transform: scale(0.96);
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
         .question-counter {
             background: rgba(255,255,240,0.2);
             padding: 8px 20px;
@@ -91,6 +120,11 @@
             padding: 20px;
             min-height: 0;
             box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05), 0 20px 35px -12px rgba(0,0,0,0.5);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .image-area:hover {
+            background: rgba(0, 0, 0, 0.35);
         }
         .quiz-image {
             max-width: 100%;
@@ -103,6 +137,109 @@
             box-shadow: 0 20px 30px -10px black;
             transition: all 0.2s ease;
             display: block;
+            pointer-events: none;
+        }
+
+        .zoom-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(20px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            visibility: hidden;
+            opacity: 0;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .zoom-modal.active {
+            visibility: visible;
+            opacity: 1;
+        }
+        .zoom-container {
+            position: relative;
+            max-width: 90vw;
+            max-height: 90vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: default;
+        }
+        .zoom-image {
+            max-width: 90vw;
+            max-height: 90vh;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            border-radius: 16px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.8);
+            animation: zoomIn 0.3s ease;
+        }
+        @keyframes zoomIn {
+            from {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        .zoom-close {
+            position: absolute;
+            top: -50px;
+            right: -20px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            z-index: 10;
+        }
+        .zoom-close:hover {
+            background: rgba(255, 255, 255, 0.4);
+            transform: scale(1.1);
+        }
+        .zoom-info {
+            position: absolute;
+            bottom: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(8px);
+            padding: 6px 16px;
+            border-radius: 40px;
+            color: #facc15;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            pointer-events: none;
+        }
+        @media (max-width: 768px) {
+            .zoom-close {
+                top: -40px;
+                right: -10px;
+                width: 38px;
+                height: 38px;
+                font-size: 24px;
+            }
+            .zoom-info {
+                bottom: -35px;
+                font-size: 0.7rem;
+            }
         }
 
         .instruction {
@@ -308,6 +445,10 @@
                 padding: 12px;
                 border-radius: 32px;
             }
+            .back-button {
+                padding: 6px 14px;
+                font-size: 0.8rem;
+            }
         }
         @media (max-width: 550px) {
             .quiz-header {
@@ -322,6 +463,10 @@
             }
             .quiz-image {
                 max-height: 55vh;
+            }
+            .back-button {
+                padding: 5px 12px;
+                font-size: 0.75rem;
             }
         }
         @media (orientation: landscape) and (max-height: 550px) {
@@ -345,15 +490,18 @@
 
 <div class="quiz-container" id="quizApp">
     <div class="quiz-header">
-        <div class="question-counter" id="counterDisplay">Soal 1 / 25</div>
-        <div class="score-badge" id="liveScoreDisplay">🏆 Skor: 0</div>
+        <button class="back-button" id="backButton">← Kembali</button>
+        <div class="header-right">
+            <div class="question-counter" id="counterDisplay">Soal 1 / 25</div>
+            <div class="score-badge" id="liveScoreDisplay">🏆 Skor: 0</div>
+        </div>
     </div>
     <div class="quiz-content">
-        <div class="image-area">
-            <img class="quiz-image" id="questionImage" alt="Gambar soal" src="" loading="eager">
+        <div class="image-area" id="imageArea">
+            <img class="quiz-image" id="questionImage" alt="Gambar soal - klik untuk zoom" src="" loading="eager">
         </div>
         
-        <div class="instruction">🔢 Ketik jawaban: Angka atau Huruf Kapital</div>
+        <div class="instruction">🔍 Klik gambar untuk memperbesar | 🔢 Ketik jawaban: Angka atau Huruf Kapital</div>
         
         <div class="answer-group">
             <input type="text" id="answerInput" class="answer-input" placeholder="Ketik jawaban di sini..." autocomplete="off" spellcheck="false">
@@ -365,6 +513,15 @@
             <button id="nextBtn" class="btn-primary">Selanjutnya  ▶</button>
             <button id="finishBtn" class="btn-warning" style="display: none;">🏁 Selesai & Nilai</button>
         </div>
+    </div>
+</div>
+
+<!-- Zoom Modal -->
+<div id="zoomModal" class="zoom-modal">
+    <div class="zoom-container">
+        <div class="zoom-close" id="zoomCloseBtn">✕</div>
+        <img id="zoomImage" class="zoom-image" alt="Gambar diperbesar">
+        <div class="zoom-info">🔍 Klik di luar gambar untuk menutup</div>
     </div>
 </div>
 
@@ -405,7 +562,6 @@
         { image: "image/23.jpg", answer: "H" },
         { image: "image/24.jpg", answer: "E" },
         { image: "image/25.jpg", answer: "F" }
-
     ];
 
     let currentIndex = 0;
@@ -414,6 +570,7 @@
 
     // DOM elements
     const questionImage = document.getElementById("questionImage");
+    const imageArea = document.getElementById("imageArea");
     const answerInput = document.getElementById("answerInput");
     const prevBtn = document.getElementById("prevBtn");
     const nextBtn = document.getElementById("nextBtn");
@@ -425,6 +582,12 @@
     const finalScoreSpan = document.getElementById("finalScoreSpan");
     const gradeMessage = document.getElementById("gradeMessage");
     const closeModalBtn = document.getElementById("closeModalBtn");
+    const backButton = document.getElementById("backButton");
+    
+    // Zoom elements
+    const zoomModal = document.getElementById("zoomModal");
+    const zoomImage = document.getElementById("zoomImage");
+    const zoomCloseBtn = document.getElementById("zoomCloseBtn");
 
     function calculateCurrentScore() {
         let correct = 0;
@@ -550,13 +713,58 @@
         saveCurrentAnswer();
     }
     
+    function goBack() {
+        if (document.referrer && document.referrer !== "") {
+            window.history.back();
+        } else {
+            window.location.href = "about:blank";
+        }
+    }
+    
+    function openZoom() {
+        const currentImageSrc = questionImage.src;
+        if (currentImageSrc && currentImageSrc !== "") {
+            zoomImage.src = currentImageSrc;
+            zoomModal.classList.add("active");
+            document.body.style.overflow = "hidden";
+        }
+    }
+    
+    function closeZoom() {
+        zoomModal.classList.remove("active");
+        document.body.style.overflow = "";
+        setTimeout(() => {
+            if (!zoomModal.classList.contains("active")) {
+                zoomImage.src = "";
+            }
+        }, 300);
+    }
+    
     function bindEvents() {
         prevBtn.addEventListener("click", goPrev);
         nextBtn.addEventListener("click", goNext);
         finishBtn.addEventListener("click", onFinishClick);
         closeModalBtn.addEventListener("click", resetAndRestart);
+        backButton.addEventListener("click", goBack);
         answerInput.addEventListener("keydown", onEnterPressed);
         answerInput.addEventListener("blur", onBlurHandler);
+        
+        imageArea.addEventListener("click", openZoom);
+        
+        zoomCloseBtn.addEventListener("click", closeZoom);
+        
+        zoomModal.addEventListener("click", (e) => {
+            if (e.target === zoomModal) {
+                closeZoom();
+            }
+        });
+        
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape" && zoomModal.classList.contains("active")) {
+                closeZoom();
+            }
+        });
+        
         scoreModal.addEventListener("click", (e) => {
             if (e.target === scoreModal) {
             }
