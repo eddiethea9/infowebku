@@ -490,7 +490,7 @@
 
 <div class="quiz-container" id="quizApp">
     <div class="quiz-header">
-        <button class="back-button" id="backButton">← Kembali</button>
+        <button class="back-button" id="backButton">← Kembali ke Beranda</button>
         <div class="header-right">
             <div class="question-counter" id="counterDisplay">Soal 1 / 25</div>
             <div class="score-badge" id="liveScoreDisplay">🏆 Skor: 0</div>
@@ -567,7 +567,6 @@
     let userAnswers = new Array(questions.length).fill("");
     const totalQuestions = questions.length;
 
-    // DOM elements
     const questionImage = document.getElementById("questionImage");
     const imageArea = document.getElementById("imageArea");
     const answerInput = document.getElementById("answerInput");
@@ -712,12 +711,8 @@
         saveCurrentAnswer();
     }
     
-    function goBack() {
-        if (document.referrer && document.referrer !== "") {
-            window.history.back();
-        } else {
-            window.location.href = "index.html";
-        }
+    function goToHome() {
+        window.location.href = "index.html";
     }
     
     function openZoom() {
@@ -744,12 +739,11 @@
         nextBtn.addEventListener("click", goNext);
         finishBtn.addEventListener("click", onFinishClick);
         closeModalBtn.addEventListener("click", resetAndRestart);
-        backButton.addEventListener("click", goBack);
+        backButton.addEventListener("click", goToHome);
         answerInput.addEventListener("keydown", onEnterPressed);
         answerInput.addEventListener("blur", onBlurHandler);
         
         imageArea.addEventListener("click", openZoom);
-        
         zoomCloseBtn.addEventListener("click", closeZoom);
         
         zoomModal.addEventListener("click", (e) => {
